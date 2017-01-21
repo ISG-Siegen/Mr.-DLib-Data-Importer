@@ -173,7 +173,7 @@ public class Harvester {
         // TODO: check parameters
 
         // construct OAI query string
-        String url = identification.baseUrl + "?verb=ListRecords&metadataPrefix=oai_dc&from=" + month + "-01&until=" + month + "-" + formatDay(getDaysOfMonth(month));
+        String url = identification.baseUrl + "?verb=ListRecords&metadataPrefix=" + metadataFormat + "&from=" + month + "-01&until=" + month + "-" + formatDay(getDaysOfMonth(month));
 
         // print queries to console
         System.out.println("[" + new Date() + "] query: " + url);
