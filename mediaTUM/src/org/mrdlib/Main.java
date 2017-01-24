@@ -80,6 +80,10 @@ public class Main {
             printErrorAndExit(messages.getString("errorNoOutputDirectoryPathPassed"));
         }
 
+        // TODO: Distinguish interface to harvest
+        // TODO: Rename harvester to OAIHarvester
+        // TODO: Create new harvester
+
         Harvester harvester = new Harvester(argumentsMap.get("baseUrl"), argumentsMap.get("outputDirectoryPath"));
 
         if (argumentsMap.get("from") == null) {
