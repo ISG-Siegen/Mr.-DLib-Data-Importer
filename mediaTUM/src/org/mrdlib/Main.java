@@ -84,7 +84,7 @@ public class Main {
         // TODO: Rename harvester to OAIHarvester
         // TODO: Create new harvester
 
-        Harvester harvester = new Harvester(argumentsMap.get("baseUrl"), argumentsMap.get("outputDirectoryPath"));
+        OaiHarvester harvester = new OaiHarvester(argumentsMap.get("baseUrl"), argumentsMap.get("outputDirectoryPath"));
 
         if (argumentsMap.get("from") == null) {
             System.out.println("harvesting all available data");

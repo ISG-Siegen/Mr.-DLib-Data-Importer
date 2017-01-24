@@ -18,7 +18,7 @@ import static org.mrdlib.Helper.getInputStreamFromUrl;
  * An instance of this class offers the functionality to harvest an OAI-PMH.
  * For details regarding OAI-PMH see: http://www.openarchives.org/OAI/openarchivesprotocol.html.
  */
-public class Harvester {
+public class OaiHarvester {
     // holds identification of repository to be harvested
     private Identification identification;
 
@@ -101,12 +101,12 @@ public class Harvester {
     }
 
     /**
-     * Constructs a new Harvester object. It collects information about the OAI interface and saves it into attributes
+     * Constructs a new OaiHarvester object. It collects information about the OAI interface and saves it into attributes
      * of the object.
      * @param baseUrl baseUrl of OAI-PMH
      * @param outputDirectoryPath path to save harvested xml files to
      */
-    public Harvester(String baseUrl, String outputDirectoryPath) {
+    public OaiHarvester(String baseUrl, String outputDirectoryPath) {
         identification = retrieveOaiPmhIdentification(baseUrl);
         metadataFormats = retrieveOaiPmhMetadataFormats(baseUrl);
 
