@@ -5,15 +5,14 @@ import org.mrdlib.model.MetadataFormat;
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.*;
 import java.io.*;
 import java.net.URL;
-import java.net.URLConnection;
 import java.time.YearMonth;
 import java.util.Date;
+
+import static org.mrdlib.Helper.getDocumentFromInputStream;
+import static org.mrdlib.Helper.getInputStreamFromUrl;
 
 /**
  * An instance of this class offers the functionality to harvest an OAI-PMH.
@@ -28,56 +27,6 @@ public class Harvester {
 
     // holds path of directory to write XML files to
     private String outputDirectoryPath;
-
-    /**
-     * Returns the data retrieved from a given URL as an InputStream.
-     * @param Url URL to retrieve data from
-     * @return retrieved data as InputStream
-     */
-    private InputStream getInputStreamFromUrl(String Url) {
-        URLConnection connection = null;
-        try {
-            connection = new URL(Url).openConnection();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        InputStream inputStream = null;
-        try {
-            inputStream = connection.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return inputStream;
-    }
-
-    /**
-     * Transforms an InputStream to a Document.
-     * @param inputStream InputStream to transform
-     * @return document that the InputStream has been transformed into
-     */
-    private Document getDocumentFromInputStream(InputStream inputStream) {
-        DocumentBuilderFactory factory = null;
-        DocumentBuilder builder = null;
-        Document document = null;
-        try {
-            factory = DocumentBuilderFactory.newInstance();
-            builder = factory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            document = builder.parse(new InputSource(inputStream));
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return document;
-    }
 
     private String formatDate(int year, int month) {
         return year + "-" + String.format("%02d", month);
