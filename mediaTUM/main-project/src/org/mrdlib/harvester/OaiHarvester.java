@@ -12,7 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * An instance of this class offers the functionality to harvest an OAI-PMH.
+ * Offers the functionality to harvest an OAI-PMH interface.
  * For details regarding OAI-PMH see: http://www.openarchives.org/OAI/openarchivesprotocol.html.
  */
 public class OaiHarvester {

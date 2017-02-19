@@ -2,7 +2,6 @@ package org.mrdlib.helper;
 
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,7 +46,7 @@ public class WebsiteRetrievalService {
      * @return document that the InputStream has been transformed into
      */
     public static Document getDocumentFromInputStream(InputStream inputStream) {
-        DocumentBuilderFactory factory = null;
+        DocumentBuilderFactory factory;
         DocumentBuilder builder = null;
         Document document = null;
         try {
@@ -58,6 +57,7 @@ public class WebsiteRetrievalService {
         }
 
         try {
+            assert builder != null;
             document = builder.parse(new InputSource(inputStream));
         // catch both, SAXException and IOException
         } catch (Exception e) {

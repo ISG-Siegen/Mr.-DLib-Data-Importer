@@ -1,10 +1,8 @@
 package org.mrdlib;
 
 import org.mrdlib.harvester.OaiHarvester;
+import org.mrdlib.harvester.WsExportHarvester;
 import org.mrdlib.helper.ConsoleOutputService;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This tool harvests publication meta data of mediaTUM.
@@ -18,6 +16,7 @@ public class Main {
      *             <ul>
      *               <li>for OAI:
      *                 <ol>
+     *                   <li>"OAI"</li>
      *                   <li>base URL of OAI service</li>
      *                   <li>meta data format of OAI service</li>
      *                   <li>path of directory to write data to</li>
@@ -25,8 +24,12 @@ public class Main {
      *               </li>
      *             <li>for ws_export:
      *               <ol>
+     *                 <li>"ws_export"</li>
+     *                 <li>base URL of ws_export service</li>
+     *                 <li>number of nodes to fetch at once (e.g. 10)</li>
      *                 <li>path to file containing node ids (each one in a new line) whose relative nodes (children and
-     *                 parents and those children and parents recursively) to harvest</li>
+     *                 parents and those children and parents recursively) to harvest, progress is saved in this file
+     *                 as well</li>
      *                 </ol>
      *               </li>
      *             </ul>
@@ -35,32 +38,47 @@ public class Main {
         int numArguments = args.length;
 
         // check if the correct number of arguments has been passed to the program
-        if (numArguments != 1 && numArguments != 3) {
+        if (numArguments != 4) {
             ConsoleOutputService.printOutError("Error: Incorrect arguments passed to program. You need to either pass: " +
-                    "a) 1) base URL of OAI service, 2) meta data format of OAI service, 3) path of directory to write " +
-                    "data to or b) 1) path to file containing node ids (each one in a new line) whose relative nodes " +
-                    "(children and parents and those children and parents recursively) to harvest.");
+                    "a) 1) 'OAI' 2) base URL of OAI service, 3) meta data format of OAI service, 4) path of directory " +
+                    "to write data to or b) 1) 'ws_export', 2) base URL of ws_export service, 3) number of nodes to " +
+                    "fetch at once (e.g. 10), 4) path to file containing node ids (each one in a new line) whose " +
+                    "relative nodes (children and parents and those children and parents recursively) to harvest.");
 
             // end program
             System.exit(1);
         }
 
         // distinguish between harvesting OAI or ws_export
-        if (numArguments == 3) {
-            // OAI
-            // read in arguments
-            String baseUrl = args[0];
-            String metadataFormat = args[1];
-            String outputDirectoryPath = args[2];
+        String harvestingMode = args[0];
 
-            // harvest
-            OaiHarvester.harvest(baseUrl, metadataFormat, outputDirectoryPath);
-        } else {
-            // ws_export
-            // read in arguments
-            String fileContainingNodesIdsPath = args[0];
+        switch (harvestingMode) {
+            case "OAI": {
+                // OAI
+                // read in arguments
+                String baseUrl = args[1];
+                String metadataFormat = args[2];
+                String outputDirectoryPath = args[3];
 
-            // TODO: add ws_export harvester
+                // harvest
+                OaiHarvester.harvest(baseUrl, metadataFormat, outputDirectoryPath);
+                break;
+            }
+            case "ws_export": {
+                // ws_export
+                // read in arguments
+                String baseUrl = args[1];
+                int numNodesToFetchAtOnce = Integer.parseInt(args[2]);
+                String fileContainingNodesIdsPath = args[3];
+
+                // harvest
+                WsExportHarvester.harvest(baseUrl, numNodesToFetchAtOnce, fileContainingNodesIdsPath);
+                break;
+            }
+            default:
+                ConsoleOutputService.printOutError("Error: no valid harvesting mode (either 'OAI' or 'ws_export' has been " +
+                        "passed as first argument.");
+                break;
         }
     }
 
