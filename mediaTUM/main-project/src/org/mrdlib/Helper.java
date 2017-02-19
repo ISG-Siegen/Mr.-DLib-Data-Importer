@@ -13,7 +13,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /**
- * Created by wuestehube on 24.01.17.
+ * Provides helper functions for retrieving data from a website.
  */
 public class Helper {
 
