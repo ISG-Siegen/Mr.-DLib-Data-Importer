@@ -1,101 +1,67 @@
 package org.mrdlib;
 
+import org.mrdlib.harvester.OaiHarvester;
+import org.mrdlib.helper.ConsoleOutputService;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 /**
- * Class containing the entry point of the console program.
+ * This tool harvests publication meta data of mediaTUM.
+ * It supports two different sources of information: 1) an OAI interface, 2) a custom ws_export service of mediaTUM.
  */
 public class Main {
-    // change for later releases
-    private static final int version = 1;
 
     /**
-     * Prints the given error message and exits the program with code 1 afterwards.
-     * @param errorMessage error message to print
-     */
-    private static void printErrorAndExit(String errorMessage) {
-        System.err.println(errorMessage);
-
-        System.exit(1);
-    }
-
-    /**
-     * Converts a given array of arguments (format: "key=value") to a key value map.
-     * Arguments not containing character '=' are ignored.
-     * @param args array of arguments (form: "key=value"
-     * @return key value map
-     */
-    private static Map<String, String> convertArgsToMap(String[] args) {
-        Map<String, String> map = new HashMap<>();
-
-        for (String arg: args) {
-            if (arg.contains("=")) {
-                String[] parts = arg.split("=");
-
-                map.put(parts[0], parts[1]);
-            }
-        }
-
-        return map;
-    }
-
-    /**
-     * Entry point of the console program.
-     * @param args list of arguments passed at start up.
+     * Runnable main function.
+     * @param args Arguments that need to be passed are:
+     *             <ul>
+     *               <li>for OAI:
+     *                 <ol>
+     *                   <li>base URL of OAI service</li>
+     *                   <li>meta data format of OAI service</li>
+     *                   <li>path of directory to write data to</li>
+     *                 </ol>
+     *               </li>
+     *             <li>for ws_export:
+     *               <ol>
+     *                 <li>path to file containing node ids (each one in a new line) whose relative nodes (children and
+     *                 parents and those children and parents recursively) to harvest</li>
+     *                 </ol>
+     *               </li>
+     *             </ul>
      */
     public static void main(String[] args) {
-        ResourceBundle messages = ResourceBundle.getBundle("messages");
+        int numArguments = args.length;
 
-        // check if arguments have been passed
-        if (args.length < 1) {
-            printErrorAndExit(messages.getString("errorNoArgumentsPassed"));
+        // check if the correct number of arguments has been passed to the program
+        if (numArguments != 1 && numArguments != 3) {
+            ConsoleOutputService.printOutError("Error: Incorrect arguments passed to program. You need to either pass: " +
+                    "a) 1) base URL of OAI service, 2) meta data format of OAI service, 3) path of directory to write " +
+                    "data to or b) 1) path to file containing node ids (each one in a new line) whose relative nodes " +
+                    "(children and parents and those children and parents recursively) to harvest.");
+
+            // end program
+            System.exit(1);
         }
 
-        // check if printing out help is requested
-        if (args[0].equals("--help")) {
-            System.out.println(messages.getString("help"));
-        }
+        // distinguish between harvesting OAI or ws_export
+        if (numArguments == 3) {
+            // OAI
+            // read in arguments
+            String baseUrl = args[0];
+            String metadataFormat = args[1];
+            String outputDirectoryPath = args[2];
 
-        // handle arguments
-        Map<String, String> argumentsMap = convertArgsToMap(args);
-
-        // check if all needed arguments have been passed
-        if (argumentsMap.get("baseUrl") == null) {
-            // TODO: check validity
-
-            printErrorAndExit(messages.getString("errorNoBaseUrlPassed"));
-        }
-
-        if (argumentsMap.get("metadataFormat") == null) {
-            // TODO: check validity
-
-            printErrorAndExit(messages.getString("errorNoMetadataFormatPassed"));
-        }
-
-        if (argumentsMap.get("outputDirectoryPath") == null) {
-            // TODO: check validity
-
-            printErrorAndExit(messages.getString("errorNoOutputDirectoryPathPassed"));
-        }
-
-        // TODO: Distinguish interface to harvest
-        // TODO: Rename harvester to OAIHarvester
-        // TODO: Create new harvester
-
-        OaiHarvester harvester = new OaiHarvester(argumentsMap.get("baseUrl"), argumentsMap.get("outputDirectoryPath"));
-
-        if (argumentsMap.get("from") == null) {
-            System.out.println("harvesting all available data");
-
-            // if no from argument is passed, harvest all data
-            harvester.harvestAll(argumentsMap.get("metadataFormat"));
+            // harvest
+            OaiHarvester.harvest(baseUrl, metadataFormat, outputDirectoryPath);
         } else {
-            System.out.println("harvesting available data since " + argumentsMap.get("from"));
+            // ws_export
+            // read in arguments
+            String fileContainingNodesIdsPath = args[0];
 
-            // otherwise harvest all data since given date
-            harvester.harvestFrom(argumentsMap.get("metadataFormat"), argumentsMap.get("from"));
+            // TODO: add ws_export harvester
         }
     }
+
 }

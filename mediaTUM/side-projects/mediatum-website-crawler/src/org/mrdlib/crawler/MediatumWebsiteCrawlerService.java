@@ -5,6 +5,7 @@ import org.mrdlib.helper.WebsiteRetrievalService;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -206,9 +207,9 @@ public class MediatumWebsiteCrawlerService {
         String firstUnexploredPage = getFirstUnexploredPage(pages);
 
         // for keeping track of progress
-        ConsoleOutputService.printOutStatus("[number of explored pages / number of all pages: " +
-                countExploredPages(pages) + "/" + pages.size() + " | currently crawled page: " + firstUnexploredPage +
-                "]");
+        ConsoleOutputService.printOutStatus("[" + new Date() + "] [number of explored pages / number of all " +
+                "pages: " + countExploredPages(pages) + "/" + pages.size() + " | currently crawled page: " +
+                firstUnexploredPage + "]");
 
         crawlPage(baseUrl, pages, nodeIds, firstUnexploredPage, outputFilePath);
     }

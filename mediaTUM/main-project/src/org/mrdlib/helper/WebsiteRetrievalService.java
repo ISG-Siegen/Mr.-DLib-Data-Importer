@@ -1,4 +1,4 @@
-package org.mrdlib;
+package org.mrdlib.helper;
 
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -15,26 +15,27 @@ import java.net.URLConnection;
 /**
  * Provides helper functions for retrieving data from a website.
  */
-public class Helper {
+public class WebsiteRetrievalService {
 
     /**
      * Returns the data retrieved from a given URL as an InputStream.
-     * @param Url URL to retrieve data from
-     * @return retrieved data as InputStream
+     * @param url URL to retrieve data from.
+     * @return Retrieved data as InputStream.
      */
-    public static InputStream getInputStreamFromUrl(String Url) {
+    public static InputStream getInputStreamFromUrl(String url) {
         URLConnection connection = null;
         try {
-            connection = new URL(Url).openConnection();
+            connection = new URL(url).openConnection();
         } catch (IOException e) {
-            e.printStackTrace();
+            ConsoleOutputService.printOutError("Error while connecting to URL " + url + ".", e);
         }
 
         InputStream inputStream = null;
         try {
+            assert connection != null;
             inputStream = connection.getInputStream();
         } catch (IOException e) {
-            e.printStackTrace();
+            ConsoleOutputService.printOutError("Error while getting the InputStream of URL " + url + ".", e);
         }
 
         return inputStream;
@@ -58,10 +59,9 @@ public class Helper {
 
         try {
             document = builder.parse(new InputSource(inputStream));
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        // catch both, SAXException and IOException
+        } catch (Exception e) {
+            ConsoleOutputService.printOutError("Error while getting the Document from InputStream.", e);
         }
 
         return document;

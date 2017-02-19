@@ -10,17 +10,23 @@ public class Main {
 
     /**
      * Runnable main function.
-     * @param args Arguments that need to be passed are: 1) mediaTUM base URL, 2) path of file to write output to.
+     * @param args Arguments that need to be passed are:
+     *             <ol>
+     *               <li>mediaTUM base URL</li>
+     *               <li>path of file to write output to</li>
+     *             </ol>
      */
     public static void main(String[] args) {
         // check if the correct number of arguments has been passed to the program
         if (args.length != 2) {
             ConsoleOutputService.printOutError("Error: Incorrect arguments passed to program. You need to pass: 1) " +
                     "mediaTUM base URL, 2) path of file to write output to.");
-            return;
+
+            // end program
+            System.exit(1);
         }
 
-        // retrieve parameters
+        // read in arguments
         String baseUrl = args[0];
         String outputFilePath = args[1];
 
