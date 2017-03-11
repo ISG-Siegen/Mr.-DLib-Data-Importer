@@ -156,14 +156,18 @@ public class WsExportHarvester {
      * @param numNodesToFetchAtOnce Number of nodes to fetch at once.
      * @param nodeIds Hash map for keeping track of the harvesting progress.
      * @param nodeId Node to harvest.
+     * @param harvestOnlyChildren Indicates whether only children may be harvested, as opposed to harvesting children
+     *                            and parents.
      */
     private static void harvestNode(String baseUrl, int numNodesToFetchAtOnce, HashMap<String, ExplorationState> nodeIds,
-                                    String nodeId) {
+                                    String nodeId, boolean harvestOnlyChildren) {
         // mark node as explored
         nodeIds.replace(nodeId, ExplorationState.EXPLORED);
 
         harvestChildren(baseUrl, numNodesToFetchAtOnce, nodeIds, nodeId);
-        harvestParents(baseUrl, nodeIds, nodeId);
+        if (!harvestOnlyChildren) {
+            harvestParents(baseUrl, nodeIds, nodeId);
+        }
     }
 
     /**
@@ -189,9 +193,12 @@ public class WsExportHarvester {
      * @param baseUrl Base URL of the ws_export service.
      * @param numNodesToFetchAtOnce Number of nodes to fetch at once.
      * @param nodeIds Hash map for keeping track of the harvesting progress.
+     * @param harvestOnlyChildren Indicates whether only children may be harvested, as opposed to harvesting children
+     *                            and parents.
      */
     private static void harvestFirstUnexploredNodeId(String baseUrl, int numNodesToFetchAtOnce,
-                                                     HashMap<String, ExplorationState> nodeIds) {
+                                                     HashMap<String, ExplorationState> nodeIds,
+                                                     boolean harvestOnlyChildren) {
         String firstUnexploredNode = getFirstUnexploredNode(nodeIds);
 
         // for keeping track of progress
@@ -199,7 +206,7 @@ public class WsExportHarvester {
                 "found nodes: " + countExploredNodes(nodeIds) + "/" + nodeIds.size() + " | currently harvested node: " +
                 firstUnexploredNode + "]");
 
-        harvestNode(baseUrl, numNodesToFetchAtOnce, nodeIds, firstUnexploredNode);
+        harvestNode(baseUrl, numNodesToFetchAtOnce, nodeIds, firstUnexploredNode, harvestOnlyChildren);
     }
 
     /**
@@ -222,14 +229,17 @@ public class WsExportHarvester {
      * @param baseUrl Base URL of the ws_export service.
      * @param numNodesToFetchAtOnce Number of nodes to fetch at once.
      * @param fileContainingNodesIdsPath File that contains the progress (each line information about a node).
+     * @param harvestOnlyChildren Indicates whether only children may be harvested, as opposed to harvesting children
+     *                            and parents. This option may be used if the top level nodes are known and thus exploring
+     *                            the complete tree structure is unnecessary.
      */
-    public static void harvest(String baseUrl, int numNodesToFetchAtOnce, String fileContainingNodesIdsPath) {
+    public static void harvest(String baseUrl, int numNodesToFetchAtOnce, String fileContainingNodesIdsPath, boolean harvestOnlyChildren) {
         // read in progress potentially saved in given file
         HashMap<String, ExplorationState> nodeIds = ProgressSavingService.readInProgress(fileContainingNodesIdsPath);
 
         // harvest until everything is harvested
         while (areNodesUnexplored(nodeIds)) {
-            harvestFirstUnexploredNodeId(baseUrl, numNodesToFetchAtOnce, nodeIds);
+            harvestFirstUnexploredNodeId(baseUrl, numNodesToFetchAtOnce, nodeIds, harvestOnlyChildren);
 
             ProgressSavingService.saveProgress(nodeIds, fileContainingNodesIdsPath);
         }
